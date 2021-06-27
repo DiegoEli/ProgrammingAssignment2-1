@@ -1,0 +1,43 @@
+## Pair of functions that cache the inverse of a matrix
+## Usage: Pass the result of a makeCacheMatrix call to cacheSolve 
+
+#' Util function that set the matrix and the inverse in an environment
+#' @param a an invertible matrix
+#' examples
+#' valx = makeCacheMatrix(matrix(rnorm(9), 3, 3))
+#' valx$set(matrix(rnorm(16), 4, 4))
+
+makeCacheMatrix <- function(valx = matrix()) {
+  # todo error if valx is not a matrix
+  inv <- NULL
+  set <- function(valy) {
+    valx <<- valy
+    inv <<- NULL
+  }
+  get <- function() valx
+  setinverse <- function(inverse) inv <<- inverse
+  getinverse <- function() inv
+  list(set = set, get = get,
+       setinverse = setinverse,
+       getinverse = getinverse)
+}
+
+#' Compute and cache the inverse of a matrix
+#' @param valx the result of a previous makeCacheMatrix call
+#' @param ... additional arguments to pass to solve function
+#' examples
+#' valx = makeCacheMatrix(matrix(rnorm(9), 3, 3))
+#' cacheSolve(valx)
+
+cacheSolve <- function(valx, ...) {
+  ## Return a matrix that is the inverse of 'valx'
+  inv <- valx$getinverse()
+  if(!is.null(inv)) {
+    message("getting cached matrix inverse")
+    return(inv)
+  }
+  data <- valx$get()
+  inv <- solve(data, ...)
+  valx$setinverse(inv)
+  inv
+}
